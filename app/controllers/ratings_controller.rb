@@ -23,7 +23,7 @@ class RatingsController < ApplicationController
     create_params['rater_ip'] = ip
     rating = Rating.new(create_params)
     if rating.save
-      render json: rating, status: :created
+      render json: {rating: rating.rating, comment: rating.comment}, status: :created
     else
       render json: rating.errors, status: 401
     end
