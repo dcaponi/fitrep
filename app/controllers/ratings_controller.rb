@@ -3,7 +3,7 @@ class RatingsController < ApplicationController
     # query ratings
     # jwt = JsonWebToken.decode(cookies[:login])
     # if jwt
-      ratings = Rating.where(user_id: jwt['id'].to_s)
+      ratings = Rating.where(user_id: "1")
       render json: {ratings: ratings}, status: 200
     # else
     #   render json: {unauthorized: "invalid credential given"}, status: 401
