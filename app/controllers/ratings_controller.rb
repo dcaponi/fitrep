@@ -1,7 +1,7 @@
 class RatingsController < ApplicationController
   def index
     # query ratings
-    jwt = JsonWebToken.decode(cookies[:login])
+    # jwt = JsonWebToken.decode(cookies[:login])
     # if jwt
       ratings = Rating.where(user_id: jwt['id'].to_s)
       render json: {ratings: ratings}, status: 200
