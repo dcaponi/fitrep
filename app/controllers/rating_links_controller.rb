@@ -13,7 +13,7 @@ class RatingLinksController < ApplicationController
     @rating_link = RatingLink
       .where("expires_at > ?", Date.today)
       .where(uuid: params[:uuid])
-      
+
     render json: @rating_link, status: :ok
   end
 
@@ -44,7 +44,7 @@ class RatingLinksController < ApplicationController
   # DELETE /rating_links/1
   # DELETE /rating_links/1.json
   def destroy
-    @rating_link.destroy
+    # @rating_link.destroy
   end
 
   private
