@@ -7,7 +7,7 @@
 
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    origins /([localhost]+\:)[0-9]{4}/, 'rating.developerdom.com'
+    origins /([localhost]+\:)[0-9]{4}/, 'ratings.developerdom.com'
 
     resource '*',
       credentials: true,
