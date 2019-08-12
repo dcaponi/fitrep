@@ -1,13 +1,13 @@
 class RatingsController < ApplicationController
   def index
     # query ratings
-    # jwt = JsonWebToken.decode(cookies[:login])
-    # if jwt
-      ratings = Rating.where(user_id: "1")
+    jwt = JsonWebToken.decode(cookies[:login])
+    if jwt
+      ratings = Rating.where(user_id: jwt[:id])
       render json: {ratings: ratings}, status: 200
-    # else
-    #   render json: {unauthorized: "invalid credential given"}, status: 401
-    # end
+    else
+      render json: {unauthorized: "invalid credential given"}, status: 401
+    end
   end
 
   def show
