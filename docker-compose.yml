@@ -10,17 +10,24 @@ services:
     volumes:
       - .:/usr/src/fitrep
     env_file:
-      - .env/dev/database
-      - .env/dev/fitrep
+      - environments/dev
+    links:
+      - redis
+
   database:
     image: postgres
     env_file:
-      - .env/dev/database
+      - environments/dev
     volumes:
       - db_data:/var/lib/postgresql/data
 
   redis:
     image: redis
+    volumes:
+      - ../data/redis:/data
+    entrypoint: redis-server --appendonly yes
+    restart: always
 
 volumes:
   db_data:
+  redis:

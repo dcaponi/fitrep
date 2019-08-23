@@ -23,6 +23,7 @@
 /config/master.key
 
 # Ignore env files
+environments
 .env
 
 # Build your own damn gems
