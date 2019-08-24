@@ -8,3 +8,17 @@ services:
       - "0:3000"
     env_file:
       - .env
+    links:
+      - redis
+    network_mode: bridge
+
+  redis:
+    image: redis
+    volumes:
+      - ../data/redis:/data
+    entrypoint: redis-server --appendonly yes
+    restart: always
+    network_mode: bridge
+
+volumes:
+  redis:
