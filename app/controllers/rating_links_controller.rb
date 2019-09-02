@@ -4,7 +4,17 @@ class RatingLinksController < ApplicationController
   # GET /rating_links
   # GET /rating_links.json
   def index
-    # @rating_links = RatingLink.all
+    if cookies[:login]
+      jwt = JsonWebToken.decode(cookies[:login])
+      if jwt
+        @rating_links = RatingLink.where(user_id: jwt[:id])
+        render json: {rating_links: @rating_links}, status: :ok
+      else
+        render json: {invalid_credential: "invalid credential given"}, status: 401
+      end
+    else
+      render json: {no_credential: "no credential given"}, status: 401
+    end
   end
 
   # GET /rating_links/1
@@ -13,21 +23,34 @@ class RatingLinksController < ApplicationController
     @rating_link = RatingLink
       .where("expires_at > ?", Date.today)
       .where(uuid: params[:uuid])
-
-    render json: @rating_link, status: :ok
+    unless @rating_link.empty?
+      render json: @rating_link, status: :ok
+    else
+      render json: {rating_link: "the requested resource was not found"}, status: :not_found
+    end
   end
 
   # POST /rating_links
   # POST /rating_links.json
   def create
-    create_params = rating_link_params
-    create_params[:expires_at] = 96.hour.from_now
-    @rating_link = RatingLink.new(create_params)
+    if cookies[:login]
+      jwt = JsonWebToken.decode(cookies[:login])
+      if jwt
+        create_params = rating_link_params
+        create_params[:user_id] = jwt[:id]
+        create_params[:expires_at] = 96.hour.from_now
+        @rating_link = RatingLink.new(create_params)
 
-    if @rating_link.save
-      render json: @rating_link, status: :created
+        if @rating_link.save
+          render json: @rating_link, status: :created
+        else
+          render json: @rating_link.errors, status: :unprocessable_entity
+        end
+      else
+        render json: {invalid_credential: "invalid credential given"}, status: 401
+      end
     else
-      render json: @rating_link.errors, status: :unprocessable_entity
+      render json: {no_credential: "no credential given"}, status: 401
     end
   end
 
@@ -55,6 +78,6 @@ class RatingLinksController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def rating_link_params
-      params.require(:rating_link).permit(:user_id, :expires_at)
+      params.require(:rating_link).permit(:expires_at)
     end
 end
