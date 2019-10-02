@@ -1,8 +1,8 @@
 class Rating < ApplicationRecord
-  belongs_to :rating_link
-  validates :user_id,          :presence => true
-  validates :rater_ip,         :presence => true
-  validates :rating_link_uuid, :presence => true
+  belongs_to :survey
+  validates :user_id,     :presence => true
+  validates :rater_ip,    :presence => true
+  validates :survey_uuid, :presence => true
   validates :rating,
     :presence     => true,
     :numericality => true,

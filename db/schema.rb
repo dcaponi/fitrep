@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_09_12_075423) do
+ActiveRecord::Schema.define(version: 2019_10_02_041003) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -23,14 +23,6 @@ ActiveRecord::Schema.define(version: 2019_09_12_075423) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "rating_links", force: :cascade do |t|
-    t.string "uuid"
-    t.string "user_id"
-    t.datetime "expires_at"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "ratings", force: :cascade do |t|
     t.string "user_id"
     t.integer "rating"
@@ -39,7 +31,15 @@ ActiveRecord::Schema.define(version: 2019_09_12_075423) do
     t.string "project_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "rating_link_uuid"
+    t.string "survey_uuid"
+  end
+
+  create_table "surveys", force: :cascade do |t|
+    t.string "uuid"
+    t.string "user_id"
+    t.datetime "expires_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
 end

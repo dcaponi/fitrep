@@ -1,4 +1,4 @@
-class RatingLink < ApplicationRecord
+class Survey < ApplicationRecord
   before_create :set_uuid
 
   def set_uuid

@@ -1,14 +1,14 @@
-class RatingLinksController < ApplicationController
-  before_action :set_rating_link, only: [:update, :destroy]
+class SurveysController < ApplicationController
+  before_action :set_survey, only: [:update, :destroy]
 
-  # GET /rating_links
-  # GET /rating_links.json
+  # GET /surveys
+  # GET /surveys.json
   def index
     if cookies[:login]
       jwt = JsonWebToken.decode(cookies[:login])
       if jwt
-        @rating_links = RatingLink.where(user_id: jwt[:id])
-        render json: {rating_links: @rating_links}, status: :ok
+        @surveys = Survey.where(user_id: jwt[:id])
+        render json: {surveys: @surveys}, status: :ok
       else
         render json: {invalid_credential: "invalid credential given"}, status: 401
       end
@@ -17,22 +17,22 @@ class RatingLinksController < ApplicationController
     end
   end
 
-  # GET /rating_links/1
-  # GET /rating_links/1.json
+  # GET /surveys/1
+  # GET /surveys/1.json
   def show
-    @rating_link = RatingLink
+    @survey = Survey
       .where(uuid: params[:uuid])
       # .where("expires_at > ?", Date.today) For now all links are permanent
 
-    unless @rating_link.empty?
-      render json: {rating_links: [@rating_link]}, status: :ok
+    unless @survey.empty?
+      render json: {surveys: [@survey]}, status: :ok
     else
-      render json: {rating_link: "the requested resource was not found"}, status: :not_found
+      render json: {survey: "the requested resource was not found"}, status: :not_found
     end
   end
 
-  # POST /rating_links
-  # POST /rating_links.json
+  # POST /surveys
+  # POST /surveys.json
   def create
     if cookies[:login]
       jwt = JsonWebToken.decode(cookies[:login])
@@ -41,12 +41,12 @@ class RatingLinksController < ApplicationController
         create_params[:user_id] = jwt[:id]
         # TODO: Move temporary links over to redis. For now, all links are permanent
         # create_params[:expires_at] = 96.hour.from_now
-        @rating_link = RatingLink.new(create_params)
+        @survey = Survey.new(create_params)
 
-        if @rating_link.save
-          render json:  {rating_links: [@rating_link]}, status: :created
+        if @survey.save
+          render json:  {surveys: [@survey]}, status: :created
         else
-          render json: @rating_link.errors, status: :unprocessable_entity
+          render json: @survey.errors, status: :unprocessable_entity
         end
       else
         render json: {invalid_credential: "invalid credential given"}, status: 401
@@ -56,16 +56,16 @@ class RatingLinksController < ApplicationController
     end
   end
 
-  # PATCH/PUT /rating_links/1
-  # PATCH/PUT /rating_links/1.json
+  # PATCH/PUT /surveys/1
+  # PATCH/PUT /surveys/1.json
   def update
     if cookies[:login]
       jwt = JsonWebToken.decode(cookies[:login])
       if jwt
-        if @rating_link.update(rating_link_params)
-          render json:  {rating_links: [@rating_link]}, status: :ok
+        if @survey.update(survey_params)
+          render json:  {surveys: [@survey]}, status: :ok
         else
-          render json: @rating_link.errors, status: :unprocessable_entity
+          render json: @survey.errors, status: :unprocessable_entity
         end
       else
         render json: {invalid_credential: "invalid credential given"}, status: 401
@@ -75,20 +75,20 @@ class RatingLinksController < ApplicationController
     end
   end
 
-  # DELETE /rating_links/1
-  # DELETE /rating_links/1.json
+  # DELETE /surveys/1
+  # DELETE /surveys/1.json
   def destroy
     if cookies[:login]
       jwt = JsonWebToken.decode(cookies[:login])
       if jwt
-        if @rating_link
-          if @rating_link.destroy
-            render json: @rating_link, status: :ok
+        if @survey
+          if @survey.destroy
+            render json: @survey, status: :ok
           else
-            render json: @rating_link.errors, status: :unprocessable_entity
+            render json: @survey.errors, status: :unprocessable_entity
           end
         else
-          render json: {rating_link: "The rating link with the given uuid could not be found"}, status: 401
+          render json: {survey: "The rating link with the given uuid could not be found"}, status: 401
         end
       else
         render json: {invalid_credential: "invalid credential given"}, status: 401
@@ -100,12 +100,12 @@ class RatingLinksController < ApplicationController
 
   private
     # Use callbacks to share common setup or constraints between actions.
-    def set_rating_link
-      @rating_link = RatingLink.find_by_uuid(params[:id])
+    def set_survey
+      @survey = Survey.find_by_uuid(params[:id])
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
-    def rating_link_params
-      params.require(:rating_link).permit(:expires_at)
+    def survey_params
+      params.require(:survey).permit(:expires_at)
     end
 end

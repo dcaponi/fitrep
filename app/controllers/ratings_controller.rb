@@ -4,8 +4,8 @@ class RatingsController < ApplicationController
     if cookies[:login]
       jwt = JsonWebToken.decode(cookies[:login])
       if jwt
-        active_rating_link = RatingLink.where(user_id: jwt[:id]).last
-        ratings = Rating.where(rating_link_uuid: active_rating_link.uuid).order(created_at: :desc)
+        active_survey = Survey.where(user_id: jwt[:id]).last
+        ratings = Rating.where(survey_uuid: active_survey.uuid).order(created_at: :desc)
         render json: {ratings: ratings}, status: 200
       else
         render json: {unauthorized: "invalid credential given"}, status: 401
@@ -25,7 +25,7 @@ class RatingsController < ApplicationController
     # create a rating
     ip = request.remote_ip
     create_params = rating_params.to_h
-    rating_owner_id = get_rating_link_owner(create_params["rating_link_uuid"])
+    rating_owner_id = get_survey_owner(create_params["survey_uuid"])
     if rating_owner_id
       create_params['rater_ip'] = ip
       create_params['user_id'] = rating_owner_id
@@ -36,17 +36,17 @@ class RatingsController < ApplicationController
         render json: rating.errors, status: 400
       end
     else
-      render json: {rating_link: "An owner for the given rating link was not found"}, status: 400
+      render json: {survey: "An owner for the given rating link was not found"}, status: 400
     end
   end
 
   def rating_params
-    params.require(:rating).permit(:rating_link_uuid, :rating, :comment)
+    params.require(:rating).permit(:survey_uuid, :rating, :comment)
   end
 
   private
-  def get_rating_link_owner(rating_link_uuid)
-    link_entry = RatingLink.where(uuid: rating_link_uuid)
+  def get_survey_owner(survey_uuid)
+    link_entry = Survey.where(uuid: survey_uuid)
     link_entry.first.user_id unless link_entry.empty?
   end
 end
