@@ -4,7 +4,8 @@ class RatingsController < ApplicationController
     if cookies[:login]
       jwt = JsonWebToken.decode(cookies[:login])
       if jwt
-        ratings = Rating.where(user_id: jwt[:id]).order(created_at: :desc)
+        active_rating_link = RatingLink.where(user_id: jwt[:id]).last
+        ratings = Rating.where(rating_link_uuid: active_rating_link.uuid).order(created_at: :desc)
         render json: {ratings: ratings}, status: 200
       else
         render json: {unauthorized: "invalid credential given"}, status: 401
@@ -24,8 +25,7 @@ class RatingsController < ApplicationController
     # create a rating
     ip = request.remote_ip
     create_params = rating_params.to_h
-    rating_link_id = create_params.delete(:rating_link_id)
-    rating_owner_id = get_rating_link_owner(rating_link_id)
+    rating_owner_id = get_rating_link_owner(create_params["rating_link_uuid"])
     if rating_owner_id
       create_params['rater_ip'] = ip
       create_params['user_id'] = rating_owner_id
@@ -41,12 +41,12 @@ class RatingsController < ApplicationController
   end
 
   def rating_params
-    params.require(:rating).permit(:rating_link_id, :rating, :comment)
+    params.require(:rating).permit(:rating_link_uuid, :rating, :comment)
   end
 
   private
-  def get_rating_link_owner(rating_link_id)
-    link_entry = RatingLink.where(uuid: rating_link_id)
+  def get_rating_link_owner(rating_link_uuid)
+    link_entry = RatingLink.where(uuid: rating_link_uuid)
     link_entry.first.user_id unless link_entry.empty?
   end
 end
