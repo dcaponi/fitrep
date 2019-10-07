@@ -10,12 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_10_02_041003) do
+ActiveRecord::Schema.define(version: 2019_10_07_152352) do
 
   # These are extensions that must be enabled in order to support this database
+  enable_extension "pgcrypto"
   enable_extension "plpgsql"
+  enable_extension "uuid-ossp"
 
-  create_table "projects", force: :cascade do |t|
+  create_table "projects", id: :uuid, default: -> { "uuid_generate_v4()" }, force: :cascade do |t|
     t.string "user_id"
     t.string "title"
     t.text "description"
@@ -23,23 +25,28 @@ ActiveRecord::Schema.define(version: 2019_10_02_041003) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "ratings", force: :cascade do |t|
-    t.string "user_id"
+  create_table "questions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "text"
+    t.boolean "allows_comment"
+    t.string "survey_id"
+  end
+
+  create_table "replies", id: :uuid, default: -> { "uuid_generate_v4()" }, force: :cascade do |t|
     t.integer "rating"
     t.text "comment"
     t.string "rater_ip"
     t.string "project_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "survey_uuid"
+    t.string "question_id"
   end
 
-  create_table "surveys", force: :cascade do |t|
-    t.string "uuid"
+  create_table "surveys", id: :uuid, default: -> { "uuid_generate_v4()" }, force: :cascade do |t|
     t.string "user_id"
     t.datetime "expires_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "name"
   end
 
 end

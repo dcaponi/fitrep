@@ -33,6 +33,12 @@ module Fitrep
     config.active_record.belongs_to_required_by_default = false
     config.middleware.insert_before 0, Rack::SslEnforcer, ignore: lambda { |request| request.env["HTTP_X_FORWARDED_PROTO"].blank? }, :hsts => true
 
+    config.active_record.primary_key = :uuid
+
+    config.generators do |g|
+      g.orm :active_record, primary_key_type: :uuid
+      g.orm :active_record, foreign_key_type: :uuid
+    end
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration can go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded after loading

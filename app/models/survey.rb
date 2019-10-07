@@ -1,7 +1,4 @@
 class Survey < ApplicationRecord
-  before_create :set_uuid
-
-  def set_uuid
-    self.uuid = SecureRandom.hex(32)
-  end
+  validates :user_id,  :presence => true
+  has_many :questions
 end
